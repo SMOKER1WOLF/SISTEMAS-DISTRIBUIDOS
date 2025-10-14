@@ -21,7 +21,7 @@
             <div class="container">
                 <h1>Menú de Clientes</h1>
                 <p><a href="ClienteControlador?Op=Listar">Listar Clientes</a></p>
-                <p><a href="UsuarioControlador?Op=Nuevo">Nuevo Cliente</a></p>
+                <p><a href="nuevoCliente.jsp">Nuevo Cliente</a></p>
             </div>
         </div>
     </body>

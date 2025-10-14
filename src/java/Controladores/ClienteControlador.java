@@ -71,15 +71,15 @@ public class ClienteControlador extends HttpServlet {
             case "Consultar":
                 String id = request.getParameter("idCliente");
                 String jsp = request.getParameter("pagina");
-                Cliente cliente= new Cliente();
+                Cliente cliente = new Cliente();
                 try {
                     String sql = "SELECT * FROM cliente WHERE idCliente = ?";
                     ps = con.prepareStatement(sql);
                     ps.setString(1, id);
                     rs = ps.executeQuery();
-                    
+
                     if (rs.next()) {
-                        
+
                         cliente.setIdCliente(rs.getString("idCliente"));
                         cliente.setApellidos(rs.getString("apellidos"));
                         cliente.setNombres(rs.getString("nombres"));
@@ -99,47 +99,75 @@ public class ClienteControlador extends HttpServlet {
                 request.getRequestDispatcher(jsp).forward(request, response);
                 break;
 
+                
             case "Nuevo":
-                break;
+                String idCliente1 = request.getParameter("idCliente");
+                String nombres1 = request.getParameter("nombres");
+                String apellidos1 = request.getParameter("apellidos");
+                String direccion1 = request.getParameter("direccion");
+                String DNI1 = request.getParameter("DNI");
+                String telefono1 = request.getParameter("telefono");
+                String movil1 = request.getParameter("movil");
+                
+                try {
+                String sql = "INSERT INTO cliente (idCliente, aoellidos, nombres, direccion, DNI, telefono, movil) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                ps = con.prepareStatement(sql);
+                rs = ps.executeQuery();
+                ps.setString(1, idCliente1);
+                ps.setString(2, nombres1);
+                ps.setString(3, apellidos1);
+                ps.setString(4, direccion1);
+                ps.setString(5, telefono1);
+                ps.setString(6, movil1);
+
+            } catch (Exception ex) {
+                System.out.println("Error de SQL +" + ex.getMessage());
+            } finally {
+                conect.disconnect();
+            }
+            break;
 
             case "Modificar":
 
                 try {
-                    String idCliente = request.getParameter("idCliente");
-                    String apellidos = request.getParameter("apellidos");
-                    String nombres = request.getParameter("nombres");
-                    String direccion = request.getParameter("direccion");
-                    String DNI = request.getParameter("DNI");
-                    String telefono = request.getParameter("telefono");
-                    String movil = request.getParameter("movil");
+                String idCliente = request.getParameter("idCliente");
+                String apellidos = request.getParameter("apellidos");
+                String nombres = request.getParameter("nombres");
+                String direccion = request.getParameter("direccion");
+                String DNI = request.getParameter("DNI");
+                String telefono = request.getParameter("telefono");
+                String movil = request.getParameter("movil");
 
-                    String updateSQL = "UPDATE cliente SET apellidos=?, nombres=?, direccion=?, DNI=?, telefono=?, movil=? WHERE idCliente=?";
-                    ps = con.prepareStatement(updateSQL);
-                    ps.setString(1, apellidos);
-                    ps.setString(2, nombres);
-                    ps.setString(3, direccion);
-                    ps.setString(4, DNI);
-                    ps.setString(5, telefono);
-                    ps.setString(6, movil);
-                    ps.setString(7, idCliente);
+                String updateSQL = "UPDATE cliente SET apellidos=?, nombres=?, direccion=?, DNI=?, telefono=?, movil=? WHERE idCliente=?";
+                ps = con.prepareStatement(updateSQL);
+                ps.setString(1, apellidos);
+                ps.setString(2, nombres);
+                ps.setString(3, direccion);
+                ps.setString(4, DNI);
+                ps.setString(5, telefono);
+                ps.setString(6, movil);
+                ps.setString(7, idCliente);
 
-                    int filas = ps.executeUpdate();
+                int filas = ps.executeUpdate();
 
-                    if (filas > 0) {
-                        request.setAttribute("mensaje", "Cliente modificado correctamente.");
-                    } else {
-                        request.setAttribute("error", "No se pudo modificar el cliente.");
-                    }
-
-                    // volver a cargar los datos del cliente actualizado
-                    response.sendRedirect("ClienteControlador?Op=Consultar&idCliente=" + idCliente+"&pagina=modificarCliente.jsp");
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    request.setAttribute("error", "Error al modificar cliente: " + e.getMessage());
-                    request.getRequestDispatcher("cliente.jsp").forward(request, response);
+                if (filas > 0) {
+                    request.setAttribute("mensaje", "Cliente modificado correctamente.");
+                } else {
+                    request.setAttribute("error", "No se pudo modificar el cliente.");
                 }
-                break;
+
+                // volver a cargar los datos del cliente actualizado
+                response.sendRedirect("ClienteControlador?Op=Consultar&idCliente=" + idCliente + "&pagina=modificarCliente.jsp");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("error", "Error al modificar cliente: " + e.getMessage());
+                request.getRequestDispatcher("cliente.jsp").forward(request, response);
+            } finally {
+                conect.disconnect();
+            }
+            break;
 
             case "Eliminar":
                 break;
