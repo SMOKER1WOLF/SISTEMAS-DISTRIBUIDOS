@@ -12,6 +12,8 @@
     <meta charset="UTF-8">
     <title>Nuevo Cliente</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styles_lista.css">
+    <a href="Index.jsp" > Inicio </a>
 </head>
 <body class="bg-light">
 
