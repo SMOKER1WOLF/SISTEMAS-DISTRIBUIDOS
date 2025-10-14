@@ -32,5 +32,8 @@
                 </tr>
             </c:forEach>
         </table>
+        <div class="boton">
+            <a href="Index.jsp" class=".btn-volver">Volver</a>
+        </div>
     </body>
 </html>

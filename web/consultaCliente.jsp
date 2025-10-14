@@ -42,7 +42,7 @@
     </c:choose>
 
     <div class="mt-4 text-center">
-        <a href="ClienteControlador?Op=Consultar&idCliente=${cliente.idCliente}&pagina=modificarCliente.jsp" class="btn btn-secondary" >Modificar</a>
+        <!--ELIMINE EL MODIFICAR PORQUE EL PROFESOR NO LO SOLICITO-->
         <a href="ClienteControlador?Op=Listar" class="btn btn-secondary">Volver</a>
     </div>
 </div>

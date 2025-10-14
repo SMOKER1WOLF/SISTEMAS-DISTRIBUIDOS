@@ -99,7 +99,6 @@ public class ClienteControlador extends HttpServlet {
                 request.getRequestDispatcher(jsp).forward(request, response);
                 break;
 
-                
             case "Nuevo":
                 String idCliente1 = request.getParameter("idCliente");
                 String nombres1 = request.getParameter("nombres");
@@ -108,29 +107,28 @@ public class ClienteControlador extends HttpServlet {
                 String DNI1 = request.getParameter("DNI");
                 String telefono1 = request.getParameter("telefono");
                 String movil1 = request.getParameter("movil");
-                
-                try {
-                String sql = "INSERT INTO cliente (idCliente, aoellidos, nombres, direccion, DNI, telefono, movil) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-                ps = con.prepareStatement(sql);
-                rs = ps.executeQuery();
-                ps.setString(1, idCliente1);
-                ps.setString(2, nombres1);
-                ps.setString(3, apellidos1);
-                ps.setString(4, direccion1);
-                ps.setString(5, telefono1);
-                ps.setString(6, movil1);
 
-            } catch (Exception ex) {
-                System.out.println("Error de SQL +" + ex.getMessage());
-            } finally {
-                conect.disconnect();
-            }
-            break;
+                try {
+                    String sql = "INSERT INTO cliente (idCliente, apellidos, nombres, direccion, DNI, telefono, movil) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    ps = con.prepareStatement(sql);
+                    rs = ps.executeQuery();
+                    ps.setString(1, idCliente1);
+                    ps.setString(2, nombres1);
+                    ps.setString(3, apellidos1);
+                    ps.setString(4, direccion1);
+                    ps.setString(5, telefono1);
+                    ps.setString(6, movil1);
+
+                } catch (Exception ex) {
+                    System.out.println("Error de SQL +" + ex.getMessage());
+                } finally {
+                    conect.disconnect();
+                }
+                break;
 
             case "Modificar":
-
-                try {
+    try {
                 String idCliente = request.getParameter("idCliente");
                 String apellidos = request.getParameter("apellidos");
                 String nombres = request.getParameter("nombres");
@@ -152,18 +150,36 @@ public class ClienteControlador extends HttpServlet {
                 int filas = ps.executeUpdate();
 
                 if (filas > 0) {
-                    request.setAttribute("mensaje", "Cliente modificado correctamente.");
+                    // volver a consultar los datos actualizados
+                    String sql = "SELECT * FROM cliente WHERE idCliente = ?";
+                    ps = con.prepareStatement(sql);
+                    ps.setString(1, idCliente);
+                    rs = ps.executeQuery();
+
+                    Cliente clienteActualizado = new Cliente();
+                    if (rs.next()) {
+                        clienteActualizado.setIdCliente(rs.getString("idCliente"));
+                        clienteActualizado.setApellidos(rs.getString("apellidos"));
+                        clienteActualizado.setNombres(rs.getString("nombres"));
+                        clienteActualizado.setDireccion(rs.getString("direccion"));
+                        clienteActualizado.setDNI(rs.getString("DNI"));
+                        clienteActualizado.setTelefono(rs.getString("telefono"));
+                        clienteActualizado.setMovil(rs.getString("movil"));
+                    }
+
+                    // Enviamos mensaje de éxito
+                    request.setAttribute("cliente", clienteActualizado);
+                    request.setAttribute("mensaje", "✅ Cliente modificado correctamente.");
+                    request.getRequestDispatcher("modificarCliente.jsp").forward(request, response);
                 } else {
-                    request.setAttribute("error", "No se pudo modificar el cliente.");
+                    // Error de actualización
+                    request.setAttribute("error", "❌ No se pudo modificar el cliente. Verifique los datos.");
+                    request.getRequestDispatcher("modificarCliente.jsp").forward(request, response);
                 }
-
-                // volver a cargar los datos del cliente actualizado
-                response.sendRedirect("ClienteControlador?Op=Consultar&idCliente=" + idCliente + "&pagina=modificarCliente.jsp");
-
             } catch (Exception e) {
                 e.printStackTrace();
-                request.setAttribute("error", "Error al modificar cliente: " + e.getMessage());
-                request.getRequestDispatcher("cliente.jsp").forward(request, response);
+                request.setAttribute("error", "⚠️ Error al modificar cliente: " + e.getMessage());
+                request.getRequestDispatcher("modificarCliente.jsp").forward(request, response);
             } finally {
                 conect.disconnect();
             }
@@ -177,10 +193,53 @@ public class ClienteControlador extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+
+    String Op = request.getParameter("Op");
+
+    if ("Nuevo".equals(Op)) {
+        Conexion conect = new Conexion();
+        Connection con = conect.establecerConexion();
+        PreparedStatement ps = null;
+
+        try {
+            String idCliente = request.getParameter("idCliente");
+            String apellidos = request.getParameter("apellidos");
+            String nombres = request.getParameter("nombres");
+            String direccion = request.getParameter("direccion");
+            String DNI = request.getParameter("DNI");
+            String telefono = request.getParameter("telefono");
+            String movil = request.getParameter("movil");
+
+            String sql = "INSERT INTO cliente (idCliente, apellidos, nombres, direccion, DNI, telefono, movil) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, idCliente);
+            ps.setString(2, apellidos);
+            ps.setString(3, nombres);
+            ps.setString(4, direccion);
+            ps.setString(5, DNI);
+            ps.setString(6, telefono);
+            ps.setString(7, movil);
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                request.setAttribute("mensaje", "✅ Cliente registrado correctamente.");
+            } else {
+                request.setAttribute("error", "❌ No se pudo registrar el cliente.");
+            }
+
+        } catch (Exception e) {
+            request.setAttribute("error", "⚠️ Error al registrar cliente: " + e.getMessage());
+        } finally {
+            conect.disconnect();
+        }
+
+        request.getRequestDispatcher("nuevoCliente.jsp").forward(request, response);
     }
+}
 
     @Override
     public String getServletInfo() {
