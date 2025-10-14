@@ -9,6 +9,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Lista de clientes</title>
         <link rel="stylesheet" type="text/css" href="css/styles_lista.css">
+    <a href="Index.jsp" > Inicio </a>
     </head>
     <body>
         <h1>Lista de clientes</h1>
