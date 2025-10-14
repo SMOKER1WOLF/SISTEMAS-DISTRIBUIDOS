@@ -28,7 +28,12 @@
                     <td>${campo.DNI}</td>
                     <td><a href="ClienteControlador?Op=Consultar&idCliente=${campo.idCliente}&pagina=consultaCliente.jsp">Consultar</a></td>
                     <td><a href="ClienteControlador?Op=Consultar&idCliente=${campo.idCliente}&pagina=modificarCliente.jsp">Modificar</a></td>
-                    <td><a href="UsuarioControlador?Op=Eliminar&Id=${campo.idCliente}">Eliminar</a></td>
+                    <td><a href="ClienteControlador?Op=Eliminar&idCliente=${campo.idCliente}" 
+                           onclick="return confirm('¿Seguro que deseas eliminar este cliente?');">
+                            Eliminar
+                        </a>
+                    </td>
+
                 </tr>
             </c:forEach>
         </table>

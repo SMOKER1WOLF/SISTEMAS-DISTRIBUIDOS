@@ -186,60 +186,125 @@ public class ClienteControlador extends HttpServlet {
             break;
 
             case "Eliminar":
-                break;
+    try {
+                String idCliente = request.getParameter("idCliente");
+
+                String sql = "DELETE FROM cliente WHERE idCliente = ?";
+                ps = con.prepareStatement(sql);
+                ps.setString(1, idCliente);
+
+                int filas = ps.executeUpdate();
+
+                if (filas > 0) {
+                    request.setAttribute("mensaje", "✅ Cliente eliminado correctamente.");
+                } else {
+                    request.setAttribute("error", "❌ No se encontró el cliente a eliminar.");
+                }
+
+                // Volver a listar los clientes actualizados
+                String sqlListar = "SELECT * FROM cliente";
+                ps = con.prepareStatement(sqlListar);
+                rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    Cliente cli = new Cliente();
+                    cli.setIdCliente(rs.getString("idCliente"));
+                    cli.setApellidos(rs.getString("apellidos"));
+                    cli.setNombres(rs.getString("nombres"));
+                    cli.setDireccion(rs.getString("direccion"));
+                    cli.setDNI(rs.getString("DNI"));
+                    cli.setTelefono(rs.getString("telefono"));
+                    cli.setMovil(rs.getString("movil"));
+                    listaCliente.add(cli);
+                }
+
+                request.setAttribute("Lista", listaCliente);
+                request.getRequestDispatcher("listarClientes.jsp").forward(request, response);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("error", "⚠️ Error al eliminar cliente: " + e.getMessage());
+                request.getRequestDispatcher("listarClientes.jsp").forward(request, response);
+            } finally {
+                conect.disconnect();
+            }
+            break;
 
             default:
                 System.out.println("MALA ");
         }
     }
 
-@Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    String Op = request.getParameter("Op");
+        String Op = request.getParameter("Op");
 
-    if ("Nuevo".equals(Op)) {
-        Conexion conect = new Conexion();
-        Connection con = conect.establecerConexion();
-        PreparedStatement ps = null;
+        if ("Nuevo".equals(Op)) {
+            Conexion conect = new Conexion();
+            Connection con = conect.establecerConexion();
 
-        try {
-            String idCliente = request.getParameter("idCliente");
-            String apellidos = request.getParameter("apellidos");
-            String nombres = request.getParameter("nombres");
-            String direccion = request.getParameter("direccion");
-            String DNI = request.getParameter("DNI");
-            String telefono = request.getParameter("telefono");
-            String movil = request.getParameter("movil");
+// --- Generar nuevo ID automáticamente ---
+            String nuevoId = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
 
-            String sql = "INSERT INTO cliente (idCliente, apellidos, nombres, direccion, DNI, telefono, movil) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            ps = con.prepareStatement(sql);
-            ps.setString(1, idCliente);
-            ps.setString(2, apellidos);
-            ps.setString(3, nombres);
-            ps.setString(4, direccion);
-            ps.setString(5, DNI);
-            ps.setString(6, telefono);
-            ps.setString(7, movil);
+            try {
+                // Buscar el último idCliente numéricamente
+                String queryId = "SELECT idCliente FROM cliente ORDER BY CAST(SUBSTRING(idCliente, 4) AS UNSIGNED) DESC LIMIT 1";
+                ps = con.prepareStatement(queryId);
+                rs = ps.executeQuery();
 
-            int filas = ps.executeUpdate();
+                if (rs.next()) {
+                    String ultimoId = rs.getString("idCliente");
 
-            if (filas > 0) {
-                request.setAttribute("mensaje", "✅ Cliente registrado correctamente.");
-            } else {
-                request.setAttribute("error", "❌ No se pudo registrar el cliente.");
+                    if (ultimoId != null && ultimoId.startsWith("CLI")) {
+                        int numero = Integer.parseInt(ultimoId.substring(3));
+                        nuevoId = String.format("CLI%03d", numero + 1);
+                    } else {
+                        nuevoId = "CLI001";
+                    }
+                } else {
+                    nuevoId = "CLI001";
+                }
+
+                // --- Insertar cliente ---
+                String apellidos = request.getParameter("apellidos");
+                String nombres = request.getParameter("nombres");
+                String direccion = request.getParameter("direccion");
+                String DNI = request.getParameter("DNI");
+                String telefono = request.getParameter("telefono");
+                String movil = request.getParameter("movil");
+
+                String sql = "INSERT INTO cliente (idCliente, apellidos, nombres, direccion, DNI, telefono, movil) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                ps = con.prepareStatement(sql);
+                ps.setString(1, nuevoId);
+                ps.setString(2, apellidos);
+                ps.setString(3, nombres);
+                ps.setString(4, direccion);
+                ps.setString(5, DNI);
+                ps.setString(6, telefono);
+                ps.setString(7, movil);
+
+                int filas = ps.executeUpdate();
+
+                if (filas > 0) {
+                    request.setAttribute("mensaje", "✅ Cliente registrado correctamente con ID: " + nuevoId);
+                } else {
+                    request.setAttribute("error", "❌ No se pudo registrar el cliente.");
+                }
+
+            } catch (Exception e) {
+                request.setAttribute("error", "⚠️ Error al registrar cliente: " + e.getMessage());
+            } finally {
+                conect.disconnect();
             }
 
-        } catch (Exception e) {
-            request.setAttribute("error", "⚠️ Error al registrar cliente: " + e.getMessage());
-        } finally {
-            conect.disconnect();
-        }
+            request.getRequestDispatcher("nuevoCliente.jsp").forward(request, response);
 
-        request.getRequestDispatcher("nuevoCliente.jsp").forward(request, response);
+        }
     }
-}
 
     @Override
     public String getServletInfo() {

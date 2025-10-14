@@ -21,11 +21,6 @@
             <form action="ClienteControlador" method="post" class="card p-4 shadow-sm">
                 <input type="hidden" name="Op" value="Nuevo">
                 <div class="mb-3">
-                    <label class="form-label">Id del Cliente</label>
-                    <input type="text" name="idCliente" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
                     <label class="form-label">Apellidos</label>
                     <input type="text" name="apellidos" class="form-control" required>
                 </div>
