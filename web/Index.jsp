@@ -30,6 +30,10 @@
                 <h2>Productos</h2>
                 <p><a href="ProductoControlador?op=listar">Listar Productos</a></p>
                 <p><a href="nuevoProducto.jsp">Nuevo Producto</a></p>
+                
+                <hr>
+                <h2>Pedidos</h2>
+                <p><a href="PedidoControlador?Op=MostrarFormulario">Registrar Pedido</a></p>
 
             </div>
         </div>
