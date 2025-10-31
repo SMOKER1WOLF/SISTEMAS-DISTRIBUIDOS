@@ -1,7 +1,7 @@
 package Controladores;
 
 import Entidades.Producto;
-import P_Conexion.ProductoDAO;
+import Modelos.ProductoDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

@@ -1,6 +1,7 @@
-package P_Conexion;
+package Modelos;
 
 import Entidades.Producto;
+import P_Conexion.Conexion;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +27,7 @@ public class ProductoDAO {
 
             while (rs.next()) {
                 Producto p = new Producto();
-                p.setIdArticulo(rs.getString("ID_articulo_01"));
+                p.setIdArticulo(rs.getString("idProducto"));
                 p.setNombre(rs.getString("nombre"));
                 p.setCantidad(rs.getString("cantidad"));
                 p.setPrecio(rs.getString("precio"));
@@ -46,7 +47,7 @@ public class ProductoDAO {
 
     // 🔹 INSERTAR PRODUCTO
     public void insertar(Producto p) {
-        String sql = "INSERT INTO producto (ID_articulo_01, nombre, cantidad, precio) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO producto (idProducto, nombre, cantidad, precio) VALUES (?, ?, ?, ?)";
         try {
             con = cn.establecerConexion();
             ps = con.prepareStatement(sql);
@@ -67,7 +68,7 @@ public class ProductoDAO {
     // 🔹 OBTENER PRODUCTO POR ID (para MODIFICAR)
     public Producto obtenerPorId(String idArticulo) {
         Producto p = null;
-        String sql = "SELECT * FROM producto WHERE ID_articulo_01 = ?";
+        String sql = "SELECT * FROM producto WHERE idProducto = ?";
         try {
             con = cn.establecerConexion();
             ps = con.prepareStatement(sql);
@@ -76,7 +77,7 @@ public class ProductoDAO {
 
             if (rs.next()) {
                 p = new Producto();
-                p.setIdArticulo(rs.getString("ID_articulo_01"));
+                p.setIdArticulo(rs.getString("idProducto"));
                 p.setNombre(rs.getString("nombre"));
                 p.setCantidad(rs.getString("cantidad"));
                 p.setPrecio(rs.getString("precio"));
@@ -91,7 +92,7 @@ public class ProductoDAO {
 
     // 🔹 ACTUALIZAR PRODUCTO (MODIFICAR)
     public void actualizar(Producto p) {
-        String sql = "UPDATE producto SET nombre=?, cantidad=?, precio=? WHERE ID_articulo_01=?";
+        String sql = "UPDATE producto SET nombre=?, cantidad=?, precio=? WHERE idProducto=?";
         try {
             con = cn.establecerConexion();
             ps = con.prepareStatement(sql);
@@ -111,7 +112,7 @@ public class ProductoDAO {
 
     // 🔹 ELIMINAR PRODUCTO
     public void eliminar(String idArticulo) {
-        String sql = "DELETE FROM producto WHERE ID_articulo_01=?";
+        String sql = "DELETE FROM producto WHERE idProducto=?";
         try {
             con = cn.establecerConexion();
             ps = con.prepareStatement(sql);
@@ -129,7 +130,7 @@ public class ProductoDAO {
     // 🔍 NUEVO: BUSCAR PRODUCTOS POR NOMBRE O ID
     public ArrayList<Producto> buscar(String texto) {
         ArrayList<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM producto WHERE ID_articulo_01 LIKE ? OR nombre LIKE ?";
+        String sql = "SELECT * FROM producto WHERE idProducto LIKE ? OR nombre LIKE ?";
 
         try {
             con = cn.establecerConexion();
@@ -140,7 +141,7 @@ public class ProductoDAO {
 
             while (rs.next()) {
                 Producto p = new Producto();
-                p.setIdArticulo(rs.getString("ID_articulo_01"));
+                p.setIdArticulo(rs.getString("idProducto"));
                 p.setNombre(rs.getString("nombre"));
                 p.setCantidad(rs.getString("cantidad"));
                 p.setPrecio(rs.getString("precio"));

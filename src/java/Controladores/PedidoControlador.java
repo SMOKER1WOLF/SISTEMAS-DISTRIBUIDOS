@@ -1,6 +1,8 @@
 package Controladores;
 
 import Entidades.Cliente;
+import Entidades.Producto;
+import Modelos.ProductoDAO;
 import P_Conexion.Conexion;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -53,11 +55,16 @@ public class PedidoControlador extends HttpServlet {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        
+        ProductoDAO PRODAO =new ProductoDAO();
+        List<Producto> listaProductos = new ArrayList<>();
+        listaProductos = PRODAO.listar();
+        
         List<Cliente> listaClientes = new ArrayList<>();
 
         try {
             con = conect.establecerConexion();
-            String sql = "SELECT idCliente, nombres, apellidos FROM cliente";
+            String sql = "SELECT * FROM cliente";
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
 
@@ -66,9 +73,13 @@ public class PedidoControlador extends HttpServlet {
                 cli.setIdCliente(rs.getString("idCliente"));
                 cli.setNombres(rs.getString("nombres"));
                 cli.setApellidos(rs.getString("apellidos"));
+                cli.setDireccion(rs.getString("direccion"));
+                cli.setTelefono(rs.getString("telefono"));
                 listaClientes.add(cli);
             }
             request.setAttribute("listaClientes", listaClientes);
+            request.setAttribute("listaProductos", listaProductos);
+            request.setAttribute("fechaVisible", Herramientas.EntidadesGlobales.getFecha());
 
         } catch (SQLException e) {
             e.printStackTrace();
