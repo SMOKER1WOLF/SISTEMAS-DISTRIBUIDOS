@@ -65,6 +65,42 @@ public class ProductoDAO {
         }
     }
 
+    // Insertar con ID autogenerado (PRO001, PRO002, ...)
+    public String insertarConIdAuto(Producto p) {
+        String nuevoId = null;
+        String sqlId = "SELECT idProducto FROM producto ORDER BY CAST(SUBSTRING(idProducto, 4) AS UNSIGNED) DESC LIMIT 1";
+        String sqlInsert = "INSERT INTO producto (idProducto, nombre, cantidad, precio) VALUES (?, ?, ?, ?)";
+
+        try {
+            con = cn.establecerConexion();
+
+            PreparedStatement psId = con.prepareStatement(sqlId);
+            ResultSet rsId = psId.executeQuery();
+
+            if (rsId.next()) {
+                String ultimoId = rsId.getString("idProducto");
+                int numero = Integer.parseInt(ultimoId.substring(3));
+                nuevoId = String.format("PRO%03d", numero + 1);
+            } else {
+                nuevoId = "PRO001";
+            }
+
+            PreparedStatement ps = con.prepareStatement(sqlInsert);
+            ps.setString(1, nuevoId);
+            ps.setString(2, p.getNombre());
+            ps.setString(3, p.getCantidad());
+            ps.setString(4, p.getPrecio());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error al insertar con ID autogenerado: " + e.getMessage());
+        } finally {
+            try { if (con != null) con.close(); } catch (SQLException e) {}
+        }
+
+        return nuevoId;
+    }
+
     // 🔹 OBTENER PRODUCTO POR ID (para MODIFICAR)
     public Producto obtenerPorId(String idArticulo) {
         Producto p = null;

@@ -72,12 +72,19 @@ public class ProductoControlador extends HttpServlet {
             switch (op) {
                 case "insertar" -> {
                     Producto nuevo = new Producto();
-                    nuevo.setIdArticulo(request.getParameter("idArticulo"));
                     nuevo.setNombre(request.getParameter("nombre"));
                     nuevo.setCantidad(request.getParameter("cantidad"));
                     nuevo.setPrecio(request.getParameter("precio"));
-                    dao.insertar(nuevo);
-                    response.sendRedirect("ProductoControlador?op=listar");
+
+                    String nuevoId = dao.insertarConIdAuto(nuevo);
+
+                    if (nuevoId != null) {
+                        request.setAttribute("mensaje", "Producto registrado correctamente con ID: " + nuevoId);
+                    } else {
+                        request.setAttribute("error", "Error al registrar producto.");
+                    }
+
+                    request.getRequestDispatcher("nuevoProducto.jsp").forward(request, response);
                 }
 
                 case "actualizar" -> { // 👈 para guardar los cambios de edición

@@ -11,14 +11,20 @@
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">Nuevo Producto</h2>
+    <% if (request.getAttribute("mensaje") != null) { %>
+        <div class="alert alert-success">
+            <%= request.getAttribute("mensaje") %>
+        </div>
+    <% } %>
+
+    <% if (request.getAttribute("error") != null) { %>
+        <div class="alert alert-danger">
+            <%= request.getAttribute("error") %>
+        </div>
+    <% } %>
 
     <form action="ProductoControlador" method="post" class="card p-4 shadow-sm">
         <input type="hidden" name="op" value="insertar">
-
-        <div class="mb-3">
-            <label class="form-label">ID Artículo</label>
-            <input type="text" name="idArticulo" class="form-control" required>
-        </div>
 
         <div class="mb-3">
             <label class="form-label">Nombre del Producto</label>
