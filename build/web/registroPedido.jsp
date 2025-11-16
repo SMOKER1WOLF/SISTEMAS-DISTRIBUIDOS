@@ -70,6 +70,7 @@
                     <div class="fila3">
                         <div class="mb-3 fecha">
                             <label class="form-label">Fecha: ${fechaVisible}</label>
+                            <input type="hidden" name="fechaPedido" value="${fechaVisible}">
                         </div>
 
                         <div class="mb-3 npedido">

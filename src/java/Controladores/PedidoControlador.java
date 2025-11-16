@@ -1,7 +1,9 @@
 package Controladores;
 
 import Entidades.Cliente;
+import Entidades.Pedido;
 import Entidades.Producto;
+import Modelos.PedidoDAO;
 import Modelos.ProductoDAO;
 import P_Conexion.Conexion;
 import jakarta.servlet.ServletException;
@@ -51,97 +53,48 @@ public class PedidoControlador extends HttpServlet {
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Conexion conect = new Conexion();
-        Connection con = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        ProductoDAO PRODAO =new ProductoDAO();
-        List<Producto> listaProductos = new ArrayList<>();
-        listaProductos = PRODAO.listar();
-        
-        List<Cliente> listaClientes = new ArrayList<>();
 
-        try {
-            con = conect.establecerConexion();
-            String sql = "SELECT * FROM cliente";
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
+        PedidoDAO dao = new PedidoDAO();
 
-            while (rs.next()) {
-                Cliente cli = new Cliente();
-                cli.setIdCliente(rs.getString("idCliente"));
-                cli.setNombres(rs.getString("nombres"));
-                cli.setApellidos(rs.getString("apellidos"));
-                cli.setDireccion(rs.getString("direccion"));
-                cli.setTelefono(rs.getString("telefono"));
-                listaClientes.add(cli);
-            }
-            request.setAttribute("listaClientes", listaClientes);
-            request.setAttribute("listaProductos", listaProductos);
-            request.setAttribute("fechaVisible", Herramientas.EntidadesGlobales.getFecha());
+        List<Cliente> listaClientes = dao.listarClientes();
+        List<Producto> listaProductos = dao.listarProductos();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Error al cargar la lista de clientes: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (con != null) conect.disconnect();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        request.setAttribute("listaClientes", listaClientes);
+        request.setAttribute("listaProductos", listaProductos);
+        request.setAttribute("fechaVisible", Herramientas.EntidadesGlobales.getFecha());
+
         request.getRequestDispatcher("registroPedido.jsp").forward(request, response);
     }
 
-
     private void registrarPedido(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Conexion conect = new Conexion();
-        Connection con = null;
-        PreparedStatement ps = null;
 
         try {
-            con = conect.establecerConexion();
-
             String idCliente = request.getParameter("idCliente");
-            String fechaStr = request.getParameter("fechaPedido");
             double montoTotal = Double.parseDouble(request.getParameter("montoTotal"));
+            String fechaStr = request.getParameter("fechaPedido");
 
-            // SimpleDateFormat to parse the date from the form
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date fechaPedido = sdf.parse(fechaStr);
-            java.sql.Date sqlFechaPedido = new java.sql.Date(fechaPedido.getTime());
+            Date fecha = sdf.parse(fechaStr);
 
-            String sql = "INSERT INTO pedido (idCliente, fechaPedido, montoTotal, estado) VALUES (?, ?, ?, 'Pendiente')";
-            ps = con.prepareStatement(sql);
-            ps.setString(1, idCliente);
-            ps.setDate(2, sqlFechaPedido);
-            ps.setDouble(3, montoTotal);
+            Pedido p = new Pedido();
+            p.setIdCliente(idCliente);
+            p.setFechaPedido(fecha);
+            p.setMontoTotal(montoTotal);
+            p.setEstado("Pendiente");
 
-            int filasAfectadas = ps.executeUpdate();
+            PedidoDAO dao = new PedidoDAO();
 
-            if (filasAfectadas > 0) {
+            if (dao.insertarPedido(p)) {
                 request.setAttribute("mensaje", "Pedido registrado correctamente.");
             } else {
                 request.setAttribute("error", "No se pudo registrar el pedido.");
             }
 
-        } catch (SQLException | ParseException e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Error al registrar el pedido: " + e.getMessage());
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (con != null) conect.disconnect();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            request.setAttribute("error", "Error al registrar pedido: " + e.getMessage());
         }
-        // After processing, always show the form again, reloading the client list
-        // and displaying any success/error message.
+
         mostrarFormulario(request, response);
     }
 }
