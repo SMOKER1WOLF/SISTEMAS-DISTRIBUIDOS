@@ -22,7 +22,7 @@
 
         <div class="mb-3">
             <label class="form-label">Nombre del Producto</label>
-            <input type="text" name="nombre" class="form-control" value="${producto.nombre}" required>
+            <input type="text" name="nombre" class="form-control" value="${producto.nombre}" readonly>
         </div>
 
         <div class="mb-3">

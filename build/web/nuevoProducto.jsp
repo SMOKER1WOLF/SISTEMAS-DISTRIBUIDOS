@@ -43,7 +43,7 @@
 
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Guardar Producto</button>
-            <a href="ProductoControlador?op=listar" class="btn btn-secondary">Cancelar</a>
+            <a href="Index.jsp" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>
