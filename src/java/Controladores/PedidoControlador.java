@@ -68,7 +68,6 @@ public class PedidoControlador extends HttpServlet {
         request.setAttribute("codigoPedido",codigoPedido);
 
         request.getRequestDispatcher("registroPedido.jsp").forward(request, response);
-        request.getRequestDispatcher("registroPedido.jsp").forward(request, response);
     }
 
     private void registrarPedido(HttpServletRequest request, HttpServletResponse response)
