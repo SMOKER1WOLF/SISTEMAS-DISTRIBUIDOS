@@ -74,7 +74,7 @@
                         </div>
 
                         <div class="mb-3 npedido">
-                            <label class="form-label">N° pedido: falta todavía</label>
+                            <label class="form-label">N° pedido: ${codigoPedido}</label>
                         </div>
                     </div>
 

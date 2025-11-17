@@ -62,7 +62,12 @@ public class PedidoControlador extends HttpServlet {
         request.setAttribute("listaClientes", listaClientes);
         request.setAttribute("listaProductos", listaProductos);
         request.setAttribute("fechaVisible", Herramientas.EntidadesGlobales.getFecha());
+        
+        int codigoPedido =
+                Herramientas.GeneradorCode.generarCodigoPedido();
+        request.setAttribute("codigoPedido",codigoPedido);
 
+        request.getRequestDispatcher("registroPedido.jsp").forward(request, response);
         request.getRequestDispatcher("registroPedido.jsp").forward(request, response);
     }
 
