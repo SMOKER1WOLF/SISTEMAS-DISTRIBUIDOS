@@ -70,35 +70,56 @@ public class PedidoControlador extends HttpServlet {
         request.getRequestDispatcher("registroPedido.jsp").forward(request, response);
     }
 
+
     private void registrarPedido(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
+    try {
 
-        try {
-            String idCliente = request.getParameter("idCliente");
-            double montoTotal = Double.parseDouble(request.getParameter("montoTotal"));
-            String fechaStr = request.getParameter("fechaPedido");
+        String idCliente = request.getParameter("idCliente");
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date fecha = sdf.parse(fechaStr);
+        // --- Corrección importante ---
+        String montoTotalStr = request.getParameter("montoTotal");
+        double montoTotal = 0;
 
-            Pedido p = new Pedido();
-            p.setIdCliente(idCliente);
-            p.setFechaPedido(fecha);
-            p.setMontoTotal(montoTotal);
-            p.setEstado("Pendiente");
-
-            PedidoDAO dao = new PedidoDAO();
-
-            if (dao.insertarPedido(p)) {
-                request.setAttribute("mensaje", "Pedido registrado correctamente.");
-            } else {
-                request.setAttribute("error", "No se pudo registrar el pedido.");
-            }
-
-        } catch (Exception e) {
-            request.setAttribute("error", "Error al registrar pedido: " + e.getMessage());
+        if (montoTotalStr != null && !montoTotalStr.isEmpty()) {
+            montoTotal = Double.parseDouble(montoTotalStr);
+        } else {
+            System.out.println("⚠ montoTotal llegó vacío o null");
         }
 
-        mostrarFormulario(request, response);
+        String fechaStr = request.getParameter("fechaPedido");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecha = sdf.parse(fechaStr);
+
+        Pedido p = new Pedido();
+        p.setIdCliente(idCliente);
+        p.setFechaPedido(fecha);
+        p.setMontoTotal(montoTotal);
+        p.setEstado("Pendiente");
+
+        PedidoDAO dao = new PedidoDAO();
+
+        if (dao.insertarPedido(p)) {
+            request.setAttribute("mensaje", "Pedido registrado correctamente.");
+        } else {
+            request.setAttribute("error", "No se pudo registrar el pedido.");
+        }
+
+        // Debug
+        System.out.println("idCliente = " + idCliente);
+        System.out.println("montoTotal = " + montoTotalStr);
+        System.out.println("fechaPedido = " + fechaStr);
+
+    } catch (Exception e) {
+        request.setAttribute("error", "Error al registrar pedido: " + e.getMessage());
+
+        System.out.println("ERROR EN SERVLET:");
+        System.out.println("idCliente = " + request.getParameter("idCliente"));
+        System.out.println("montoTotal = " + request.getParameter("montoTotal"));
+        System.out.println("fechaPedido = " + request.getParameter("fechaPedido"));
     }
+
+    mostrarFormulario(request, response);
 }
+}
+  
