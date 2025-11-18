@@ -4,7 +4,6 @@ import Entidades.Cliente;
 import Entidades.Pedido;
 import Entidades.Producto;
 import P_Conexion.Conexion;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,9 @@ public class PedidoDAO {
     private final Conexion cn = new Conexion();
     private Connection con;
 
+    // ------------------------------------------------------------
+    // LISTAR CLIENTES
+    // ------------------------------------------------------------
     public List<Cliente> listarClientes() {
         List<Cliente> lista = new ArrayList<>();
         String sql = "SELECT * FROM cliente";
@@ -42,12 +44,17 @@ public class PedidoDAO {
         return lista;
     }
 
+    // ------------------------------------------------------------
+    // LISTAR PRODUCTOS
+    // ------------------------------------------------------------
     public List<Producto> listarProductos() {
-        List<Producto> lista = new ArrayList<>();
         ProductoDAO pdao = new ProductoDAO();
         return pdao.listar(); // reutilizamos tu DAO existente
     }
 
+    // ------------------------------------------------------------
+    // INSERTAR PEDIDO
+    // ------------------------------------------------------------
     public boolean insertarPedido(Pedido p) {
         String sql = "INSERT INTO pedido(idCliente, fechaPedido, montoTotal, estado) VALUES (?, ?, ?, ?)";
 
@@ -71,6 +78,41 @@ public class PedidoDAO {
         }
     }
 
+    // ------------------------------------------------------------
+    // LISTAR PEDIDOS  (NUEVO)
+    // ------------------------------------------------------------
+    public List<Pedido> listarPedidos() {
+        List<Pedido> lista = new ArrayList<>();
+        String sql = "SELECT * FROM pedido";
+
+        try {
+            con = cn.establecerConexion();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Pedido p = new Pedido();
+                p.setIdPedido(rs.getInt("idPedido"));
+                p.setIdCliente(rs.getString("idCliente"));
+                p.setFechaPedido(rs.getDate("fechaPedido"));
+                p.setMontoTotal(rs.getDouble("montoTotal"));
+                p.setEstado(rs.getString("estado"));
+
+                lista.add(p);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error listando pedidos: " + e.getMessage());
+        } finally {
+            cerrarConexion();
+        }
+
+        return lista;
+    }
+
+    // ------------------------------------------------------------
+    // CERRAR CONEXIÓN
+    // ------------------------------------------------------------
     private void cerrarConexion() {
         try {
             if (con != null) {
@@ -80,4 +122,5 @@ public class PedidoDAO {
             System.out.println("Error cerrando conexión: " + e.getMessage());
         }
     }
+
 }

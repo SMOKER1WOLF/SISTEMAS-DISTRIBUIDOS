@@ -34,6 +34,8 @@
                 <hr>
                 <h2>Pedidos</h2>
                 <p><a href="PedidoControlador?Op=MostrarFormulario">Registrar Pedido</a></p>
+                <p><a href="PedidoControlador?Op=Listar">Listar pedidos</a></p>
+
 
             </div>
         </div>

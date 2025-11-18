@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/styles_pedidos.css">
         <link rel="stylesheet" type="text/css" href="css/styles_lista.css">
+        <a href="Index.jsp" > Inicio </a>
     </head>
     <body class="bg-light">
 
@@ -167,7 +168,7 @@
 
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Registrar Pedido</button>
-                    <a href="index.jsp" class="btn btn-secondary">Volver al Inicio</a>
+                    <a href="Index.jsp" class="btn btn-secondary">Volver al Menú</a>
                 </div>
             </form>
         </div>
